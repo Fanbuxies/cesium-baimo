@@ -1,0 +1,127 @@
+:root {
+  color: #dbe6ec;
+  font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+  background: #071019;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+#cesium-container {
+  position: absolute;
+  inset: 0;
+}
+
+.info-panel {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 10;
+  width: 320px;
+  max-height: calc(100% - 32px);
+  overflow-y: auto;
+  color: #dbe6ec;
+  background: rgba(14, 22, 32, 0.92);
+  border: 1px solid rgba(151, 183, 199, 0.2);
+  border-radius: 4px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px);
+}
+
+.panel-header,
+.panel-content,
+.panel-footer {
+  padding: 20px 22px;
+}
+
+.panel-header {
+  border-bottom: 1px solid rgba(151, 183, 199, 0.16);
+}
+
+.panel-kicker,
+.section-label {
+  margin: 0 0 10px;
+  color: #77a8b7;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+}
+
+.panel-header h1,
+.panel-content h2 {
+  margin: 0;
+  font-family: STSong, SimSun, serif;
+  font-weight: 600;
+}
+
+.panel-header h1 {
+  font-size: 22px;
+  letter-spacing: 0.04em;
+}
+
+.building-count {
+  margin: 12px 0 0;
+  color: #8fa1aa;
+  font-size: 13px;
+}
+
+.building-count strong {
+  color: #f0b75e;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.panel-content {
+  min-height: 180px;
+}
+
+.panel-content h2 {
+  font-size: 18px;
+}
+
+.panel-hint {
+  margin: 14px 0 0;
+  color: #91a1aa;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.panel-footer {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #84959d;
+  border-top: 1px solid rgba(151, 183, 199, 0.16);
+  font-size: 12px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  background: #79a879;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(121, 168, 121, 0.7);
+}
+
+.cesium-performanceDisplay-defaultContainer {
+  top: 16px !important;
+  right: 16px !important;
+  left: auto !important;
+  padding: 8px 10px;
+  background: rgba(14, 22, 32, 0.82);
+  border: 1px solid rgba(151, 183, 199, 0.2);
+  border-radius: 3px;
+  backdrop-filter: blur(8px);
+}

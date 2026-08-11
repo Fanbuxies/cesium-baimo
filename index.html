@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0e1620" />
+    <title>建筑白模 · Cesium 学习工程</title>
+  </head>
+  <body>
+    <main id="app">
+      <div id="cesium-container" aria-label="Cesium 三维视口"></div>
+
+      <aside class="info-panel" aria-label="建筑属性面板">
+        <header class="panel-header">
+          <p class="panel-kicker">CESIUM · URBAN STUDY</p>
+          <h1>建筑白模 · 属性</h1>
+          <p class="building-count">已加载 <strong>0</strong> 栋</p>
+        </header>
+
+        <section class="panel-content">
+          <p class="section-label">当前阶段</p>
+          <h2>工程骨架</h2>
+          <p class="panel-hint">三维场景已就绪。建筑数据将在下一阶段接入。</p>
+        </section>
+
+        <footer class="panel-footer">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span>默认底图 · OpenStreetMap</span>
+        </footer>
+      </aside>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
