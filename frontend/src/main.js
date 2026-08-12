@@ -1,7 +1,7 @@
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import "./style.css";
 import { createViewer, useTiandituBasemap } from "./viewer.js";
-import { loadBuildings } from "./buildings.js";
+import { loadBuildings, setObliqueView } from "./buildings.js";
 import { enablePicking } from "./picking.js";
 import { queryBuildingDetail } from "./api.js";
 import {
@@ -15,12 +15,16 @@ import {
 } from "./panel.js";
 import {
   enableDatasetControl,
+  enableObliqueControl,
   enableSseControl,
   renderLoadTime,
+  renderObliqueStatus,
   renderPerfStats,
   renderTilesetStats,
   renderTilesetStatus,
   setDatasetControlDisabled,
+  setObliqueControlDisabled,
+  setObliqueLoaded,
   setSseControlDisabled,
 } from "./perf-panel.js";
 import { applyTheme, createTheme } from "./theme.js";
@@ -40,6 +44,12 @@ const DATASETS = {
   20000: "/buildings-20000.geojson",
 };
 const TILE_STATS_INTERVAL = 500;
+// 法国 CRAIG 公开的圣艾蒂安实景三维（Etalab 开放许可），已开 CORS。
+// 这是唯一一处远程运行时资源，用于对照本地 batched 样例：它点不出属性。
+const OBLIQUE_URL =
+  "https://3d.craig.fr/datasets/St-Etienne_oblique/3dtiles/tileset.json";
+// 不搬迁：光谷没有公开的真实倾斜摄影，把法国数据挪过来会让场景在地理上失真。
+// 数据留在圣艾蒂安原地，靠相机飞过去看，「整张蒙皮无单体」照样验证得了
 
 const viewer = createViewer("cesium-container");
 // 网络响应返回顺序不固定，旧请求晚到时不能覆盖用户最后点击的建筑
@@ -49,7 +59,8 @@ let datasetRequestSeq = 0;
 let currentDataSource;
 let currentTheme = "height";
 let detailTileset;
-let lodTileset;
+let obliqueTileset;
+let obliqueBusy = false;
 
 useTiandituBasemap(viewer, import.meta.env.VITE_TIANDITU_TOKEN);
 
@@ -57,6 +68,10 @@ async function initializeBuildings() {
   enablePicking(viewer, { onPick: handlePick });
   enableThemeControls((theme) => void switchTheme(theme));
   enableDatasetControl((dataset) => void switchDataset(dataset));
+  enableObliqueControl(
+    () => void toggleOblique(),
+    () => void returnToStudyArea(),
+  );
   startPerfMonitor(viewer, renderPerfStats);
   await switchDataset("sample");
 }
@@ -138,6 +153,11 @@ function handlePick(result) {
     renderTileFeature(result);
     return;
   }
+  // 倾斜摄影没有单体，不能按 Entity 那样拿 code 去查后端
+  if (result.type === "tileMesh") {
+    renderPanel({ type: "tileMesh" });
+    return;
+  }
 
   const entity = result.raw;
   const baseData = {
@@ -204,10 +224,8 @@ async function initializeTilesets() {
   try {
     detailTileset = await loadTileset(viewer, "/tileset/batched/tileset.json");
     moveTileset(detailTileset, 114.3988, 30.5055);
-    lodTileset = await loadTileset(viewer, "/tileset/lod/tileset.json");
-    moveTileset(lodTileset, 114.4022, 30.5055);
     setSseControlDisabled(false);
-    renderTilesetStatus("属性样例与 LOD 样例已加载");
+    renderTilesetStatus("属性样例已加载");
     refreshTilesetStats();
     window.setInterval(refreshTilesetStats, TILE_STATS_INTERVAL);
   } catch (error) {
@@ -218,9 +236,9 @@ async function initializeTilesets() {
 }
 
 function handleSseChange(value) {
-  if (!lodTileset) return;
+  if (!detailTileset) return;
   try {
-    setScreenSpaceError(lodTileset, value);
+    setScreenSpaceError(detailTileset, value);
     refreshTilesetStats();
   } catch (error) {
     console.error("SSE 调整失败：", error);
@@ -229,15 +247,60 @@ function handleSseChange(value) {
 }
 
 function refreshTilesetStats() {
-  if (!lodTileset) return;
-  renderTilesetStats(getTilesetStats(lodTileset), lodTileset.maximumScreenSpaceError);
+  if (!detailTileset) return;
+  renderTilesetStats(
+    getTilesetStats(detailTileset),
+    detailTileset.maximumScreenSpaceError,
+  );
 }
 
 function removeTilesets() {
   if (detailTileset) viewer.scene.primitives.remove(detailTileset);
-  if (lodTileset) viewer.scene.primitives.remove(lodTileset);
   detailTileset = undefined;
-  lodTileset = undefined;
+}
+
+async function toggleOblique() {
+  if (obliqueBusy) return;
+  if (obliqueTileset) {
+    removeOblique();
+    renderObliqueStatus("已移除。点「加载」可重新拉取。");
+    await returnToStudyArea();
+    return;
+  }
+
+  obliqueBusy = true;
+  setObliqueControlDisabled(true);
+  renderObliqueStatus("正在拉取法国 CRAIG 的瓦片，海外服务器较慢…");
+  const startedAt = performance.now();
+  try {
+    obliqueTileset = await loadTileset(viewer, OBLIQUE_URL);
+    const seconds = ((performance.now() - startedAt) / 1000).toFixed(1);
+    setObliqueLoaded(true);
+    renderObliqueStatus(
+      `已加载（${seconds}s），镜头飞到法国圣艾蒂安。点击模型看看能否取到属性。`,
+    );
+    await viewer.zoomTo(obliqueTileset);
+  } catch (error) {
+    console.error("倾斜摄影加载失败：", error);
+    removeOblique();
+    renderObliqueStatus(`加载失败：${error.message}`, true);
+  } finally {
+    obliqueBusy = false;
+    setObliqueControlDisabled(false);
+  }
+}
+
+function removeOblique() {
+  if (obliqueTileset) viewer.scene.primitives.remove(obliqueTileset);
+  obliqueTileset = undefined;
+  setObliqueLoaded(false);
+}
+
+/** 看完倾斜摄影后把镜头摆回白模研究区。 */
+async function returnToStudyArea() {
+  if (!currentDataSource) return;
+  await viewer.zoomTo(currentDataSource);
+  setObliqueView(viewer);
 }
 
 function formatPropertyValue(value) {

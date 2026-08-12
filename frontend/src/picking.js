@@ -5,8 +5,8 @@ const tileBaseColors = new WeakMap();
 
 /**
  * @typedef {Object} PickResult
- * @property {"entity"|"tileFeature"} type
- * @property {Cesium.Entity|Cesium.Cesium3DTileFeature} raw
+ * @property {"entity"|"tileFeature"|"tileMesh"} type
+ * @property {Cesium.Entity|Cesium.Cesium3DTileFeature|Cesium.Cesium3DTileset} raw
  * @property {string|undefined} code
  * @property {(key: string) => any} getProperty
  */
@@ -56,6 +56,18 @@ export function pickEntity(viewer, windowPosition) {
       raw: picked,
       code: readTileCode(picked),
       getProperty: (key) => picked.getProperty(key),
+    };
+  }
+
+  // 真实倾斜摄影是一整张连续蒙皮：b3dm 的 BATCH_LENGTH 为 0、没有 batch table，
+  // 所以拾取结果不是 Cesium3DTileFeature，拿不到任何单体属性。
+  // 这一分支必须放在 Cesium3DTileFeature 判断之后——feature 的 primitive 同样是 tileset。
+  if (picked.primitive instanceof Cesium.Cesium3DTileset) {
+    return {
+      type: "tileMesh",
+      raw: picked.primitive,
+      code: undefined,
+      getProperty: () => undefined,
     };
   }
 

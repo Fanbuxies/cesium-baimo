@@ -106,6 +106,11 @@ export function renderPanel(data) {
     return;
   }
 
+  if (data.type === "tileMesh") {
+    renderTileMeshPanel();
+    return;
+  }
+
   renderEntityPanel(data);
 }
 
@@ -131,6 +136,23 @@ function renderTilePanel(data) {
     createHeading(data.name ?? "3D Tiles 建筑"),
     createCode(data.code),
     createRows(data.properties ?? []),
+  );
+}
+
+function renderTileMeshPanel() {
+  contentElement.replaceChildren(
+    createLabel("倾斜摄影"),
+    createHeading("整体蒙皮，无单体"),
+    createHint(
+      "点中了模型，但取不到任何属性。真实倾斜摄影成果是一整张连续三角网，" +
+        "b3dm 的 BATCH_LENGTH 为 0、不含 batch table，建筑之间没有边界，" +
+        "所以没有「一栋楼」这个对象可供拾取。要按栋查属性，必须先做单体化。",
+    ),
+    createRows([
+      ["拾取结果", "Cesium3DTileset（非 Feature）"],
+      ["可读属性数", 0],
+      ["对照", "本地 batched 样例可点出属性"],
+    ]),
   );
 }
 

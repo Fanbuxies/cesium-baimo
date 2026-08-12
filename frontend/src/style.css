@@ -44,6 +44,7 @@ body,
 .perf-panel,
 .theme-panel,
 .tileset-panel,
+.oblique-panel,
 .panel-footer {
   padding: 20px 22px;
 }
@@ -162,7 +163,8 @@ body,
 
 .perf-panel,
 .theme-panel,
-.tileset-panel {
+.tileset-panel,
+.oblique-panel {
   border-top: 1px solid rgba(151, 183, 199, 0.16);
 }
 
@@ -217,8 +219,42 @@ body,
 }
 
 .theme-message.is-error,
-.tileset-message.is-error {
+.tileset-message.is-error,
+.oblique-message.is-error {
   color: #ef8b83;
+}
+
+.oblique-actions {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 7px;
+}
+
+.oblique-actions button {
+  padding: 7px 4px;
+  color: #9fb0b8;
+  background: rgba(7, 16, 25, 0.58);
+  border: 1px solid rgba(151, 183, 199, 0.22);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.oblique-actions button:hover:not(:disabled),
+.oblique-actions button.is-active {
+  color: #f4d284;
+  border-color: rgba(240, 183, 94, 0.72);
+}
+
+.oblique-actions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.oblique-message {
+  margin: 10px 0 0;
+  color: #84959d;
+  font-size: 11px;
+  line-height: 1.5;
 }
 
 .sse-control {

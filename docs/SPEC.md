@@ -523,7 +523,37 @@ export function getTilesetStats(tileset)
 `pickEntity` 增加 3D Tiles 分支——**仍是 [自己写]**，Codex 只加 TODO 注释
 和一段说明两种返回结构差异的文档。
 
-### 5.7 验收清单
+### 5.7 倾斜摄影对照
+
+同屏加载两份 3D Tiles 做对比，验证「倾斜摄影为什么必须做单体化」：
+
+- A. 本地 `public/tileset/batched/`，带 batchTable，点选**能**拿到属性
+- B. 法国 CRAIG 圣艾蒂安实景三维，真实倾斜摄影，点选**拿不到**属性
+  `https://3d.craig.fr/datasets/St-Etienne_oblique/3dtiles/tileset.json`
+  （Etalab 开放许可，实测已开 `Access-Control-Allow-Origin: *`）
+
+这是全项目**唯一**的远程运行时资源。它不是 Ion 服务，与 3.1 的禁令不冲突；
+断网时按钮会报错并在面板给出原因，属预期行为，不影响其余功能。
+
+实测得到的几个结论，都是踩过才知道的：
+
+- 该数据 b3dm 的 `BATCH_LENGTH` 为 0、不含 batch table，
+  `scene.pick` 返回的不是 `Cesium3DTileFeature` 而是 `Cesium3DTileset`
+- 所以 `pickEntity` 必须多一个 `tileMesh` 分支，把「点中了但没属性」
+  和「压根没点中」区分开。不加这个分支，现象会被当成拾取失败，
+  教学点反而被淹没
+- **不把它搬到光谷**。光谷没有公开的真实倾斜摄影数据源（国内成果基本不以
+  开放 3D Tiles 发布），把法国数据挪过来会让场景在地理上失真，
+  当学习素材容易形成错误直觉。数据留在圣艾蒂安原地，靠相机飞过去看，
+  「整张蒙皮无单体」照样验证得了
+- 数据实测 3750×3905m，比 200m 的白模研究区大近 20 倍，
+  这也是它没法和白模并排摆的原因
+- 该数据用 `region` 包围盒。region 是地理坐标，不跟随 `modelMatrix`，
+  一旦搬迁容易出现「几何走了、剔除盒没走」——又一条别乱搬的理由
+
+在 `PERF-LOG.md` 里记录两者的差异现象。
+
+### 5.8 验收清单
 
 - [ ] 五档数据量能自由切换，切换后实体数正确（不是累加）
 - [ ] 性能面板 FPS / 实体数 / 加载耗时都在实时更新
@@ -531,6 +561,8 @@ export function getTilesetStats(tileset)
 - [ ] SSE 滑块从 8 拖到 48，**肉眼能看到模型变粗糙**，已加载瓦片数明显下降
 - [ ] 3D Tiles 和 GeoJSON 白模能同时显示在场景里
 - [ ] 作者实现 3D Tiles 分支后，点选 tileset 建筑能拿到属性
+- [ ] 点本地 batched 样例能拿到属性；点在线倾斜摄影明确提示「无单体」，
+      且这两种提示与「没点中」三者互不混淆
 
 ---
 
@@ -541,7 +573,8 @@ export function getTilesetStats(tileset)
 - 用户登录、权限、多租户
 - Docker、CI、部署脚本
 - 单元测试框架（验收靠肉眼和控制台）
-- 倾斜摄影真实数据（拿不到，也不是学习重点）
+- 倾斜摄影的单体化实现（5.7 只做对照观察，不做切割）
+- OSGB 等原始成果的格式转换（面试问的是概念，不是现场转数据）
 - 移动端适配
 - 国际化
 - 生产环境的错误上报、埋点

@@ -9,6 +9,9 @@ const tilesVisibleElement = document.querySelector('[data-tileset="visible"]');
 const geometryMemoryElement = document.querySelector('[data-tileset="geometry"]');
 const textureMemoryElement = document.querySelector('[data-tileset="texture"]');
 const tilesetMessageElement = document.querySelector(".tileset-message");
+const obliqueToggle = document.querySelector("#oblique-toggle");
+const obliqueReturn = document.querySelector("#oblique-return");
+const obliqueMessageElement = document.querySelector(".oblique-message");
 
 /** @param {(dataset: string) => void} onSelect */
 export function enableDatasetControl(onSelect) {
@@ -61,6 +64,37 @@ export function renderTilesetStats(stats, sse) {
 export function renderTilesetStatus(message, isError = false) {
   tilesetMessageElement.textContent = message;
   tilesetMessageElement.classList.toggle("is-error", isError);
+}
+
+/** @param {() => void} onToggle @param {() => void} onReturn */
+export function enableObliqueControl(onToggle, onReturn) {
+  obliqueToggle.addEventListener("click", onToggle);
+  obliqueReturn.addEventListener("click", onReturn);
+  return () => {
+    obliqueToggle.removeEventListener("click", onToggle);
+    obliqueReturn.removeEventListener("click", onReturn);
+  };
+}
+
+/** @param {boolean} disabled */
+export function setObliqueControlDisabled(disabled) {
+  obliqueToggle.disabled = disabled;
+}
+
+/**
+ * 同步倾斜摄影按钮的文案与「飞回光谷」的可用状态。
+ * @param {boolean} loaded
+ */
+export function setObliqueLoaded(loaded) {
+  obliqueToggle.textContent = loaded ? "移除倾斜摄影" : "加载在线倾斜摄影";
+  obliqueToggle.classList.toggle("is-active", loaded);
+  obliqueReturn.disabled = !loaded;
+}
+
+/** @param {string} message @param {boolean} [isError] */
+export function renderObliqueStatus(message, isError = false) {
+  obliqueMessageElement.textContent = message;
+  obliqueMessageElement.classList.toggle("is-error", isError);
 }
 
 function formatMegabytes(bytes) {

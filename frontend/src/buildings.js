@@ -142,7 +142,11 @@ function applyBuildingStyle(entity) {
   entity._heightSource = source;
 }
 
-function setObliqueView(viewer) {
+/**
+ * 把相机摆到光谷研究区的斜视角。看完远处的倾斜摄影后靠它飞回来。
+ * @param {Cesium.Viewer} viewer
+ */
+export function setObliqueView(viewer) {
   viewer.scene.camera.setView({
     destination: Cesium.Cartesian3.fromDegrees(114.4005, 30.501, 900),
     orientation: {
