@@ -1,4 +1,11 @@
 node_modules/
 dist/
+backend/target/
 .env
 .env.local
+
+# 性能测试数据由 scripts/gen-buildings.mjs 按需重新生成，不入库
+buildings-500.geojson
+buildings-2000.geojson
+buildings-5000.geojson
+buildings-20000.geojson

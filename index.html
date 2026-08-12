@@ -15,12 +15,65 @@
           <p class="panel-kicker">CESIUM · URBAN STUDY</p>
           <h1>建筑白模 · 属性</h1>
           <p class="building-count">已加载 <strong>0</strong> 栋</p>
+          <label class="dataset-control" for="dataset-select">
+            <span>性能数据量</span>
+            <select id="dataset-select">
+              <option value="sample">示例（12）</option>
+              <option value="500">500</option>
+              <option value="2000">2000</option>
+              <option value="5000">5000</option>
+              <option value="20000">20000</option>
+            </select>
+          </label>
         </header>
 
         <section class="panel-content">
-          <p class="section-label">当前阶段</p>
-          <h2>工程骨架</h2>
-          <p class="panel-hint">三维场景已就绪。建筑数据将在下一阶段接入。</p>
+          <p class="section-label">阶段 2</p>
+          <h2>数据加载与白模拉伸</h2>
+          <p class="panel-hint">正在准备建筑示例数据…</p>
+        </section>
+
+        <section class="perf-panel" aria-label="性能监测">
+          <p class="section-label">性能实测</p>
+          <dl class="compact-stats">
+            <dt>近 60 帧 FPS</dt>
+            <dd data-perf="fps">0</dd>
+            <dt>Entity 数量</dt>
+            <dd data-perf="entities">0</dd>
+            <dt>加载耗时</dt>
+            <dd data-perf="load-time">—</dd>
+          </dl>
+        </section>
+
+        <section class="theme-panel" aria-label="专题着色">
+          <p class="section-label">专题着色</p>
+          <div class="theme-actions">
+            <button type="button" data-theme="height">按高度</button>
+            <button type="button" data-theme="use">按用途</button>
+            <button type="button" data-theme="year">按年份</button>
+          </div>
+          <p class="theme-message" aria-live="polite"></p>
+          <ul class="theme-legend" aria-label="专题图例"></ul>
+        </section>
+
+        <section class="tileset-panel" aria-label="3D Tiles 参数">
+          <p class="section-label">3D TILES</p>
+          <label class="sse-control" for="sse-range">
+            <span>屏幕空间误差（SSE）</span>
+            <output for="sse-range" data-tileset="sse">16</output>
+          </label>
+          <input id="sse-range" type="range" min="2" max="64" value="16" />
+          <dl class="compact-stats tileset-stats">
+            <dt>已加载瓦片</dt>
+            <dd data-tileset="loaded">0</dd>
+            <dt>当前可见瓦片</dt>
+            <dd data-tileset="visible">0</dd>
+            <dt>几何内存</dt>
+            <dd data-tileset="geometry">0 MB</dd>
+            <dt>纹理内存</dt>
+            <dd data-tileset="texture">0 MB</dd>
+          </dl>
+          <p class="tileset-message" aria-live="polite">正在加载本地样例…</p>
         </section>
 
         <footer class="panel-footer">
