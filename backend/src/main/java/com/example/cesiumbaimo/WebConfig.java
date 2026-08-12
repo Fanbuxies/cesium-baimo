@@ -20,7 +20,10 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/api/**")
                 .allowedOrigins(
                         "http://localhost:5173",
-                        "http://127.0.0.1:5173"
+                        "http://127.0.0.1:5173",
+                        // Windows 上 localhost 常优先解析到 IPv6，浏览器发出的
+                        // Origin 会是 http://[::1]:5173，漏掉这条会被 CORS 拦掉
+                        "http://[::1]:5173"
                 )
                 .allowedMethods("GET");
     }
