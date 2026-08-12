@@ -14,27 +14,28 @@ cesium-baimo/
 ├── SPEC.md
 ├── STUBS.md
 ├── PERF-LOG.md              阶段 5 才填
-├── package.json
-├── vite.config.js
-├── .env.example
-├── index.html
-├── public/
-│   ├── buildings-sample.geojson
-│   └── tileset/             阶段 5 放 3D Tiles 样例
-├── scripts/
-│   └── gen-buildings.mjs    阶段 5
 ├── backend/                 阶段 4
-└── src/
-    ├── main.js              入口，只做装配，不写业务逻辑
-    ├── viewer.js            Viewer 初始化与底图
-    ├── buildings.js         GeoJSON 加载与白模拉伸
-    ├── picking.js           拾取与高亮
-    ├── panel.js             左侧信息面板渲染
-    ├── theme.js             专题着色（阶段 4）
-    ├── tileset.js           3D Tiles 加载（阶段 5）
-    ├── perf.js              性能监测（阶段 5）
-    ├── api.js               后端接口封装
-    └── style.css
+└── frontend/
+    ├── package.json
+    ├── vite.config.js
+    ├── .env.example
+    ├── index.html
+    ├── public/
+    │   ├── buildings-sample.geojson
+    │   └── tileset/         阶段 5 放 3D Tiles 样例
+    ├── scripts/
+    │   └── gen-buildings.mjs    阶段 5
+    └── src/
+        ├── main.js          入口，只做装配，不写业务逻辑
+        ├── viewer.js        Viewer 初始化与底图
+        ├── buildings.js     GeoJSON 加载与白模拉伸
+        ├── picking.js       拾取与高亮
+        ├── panel.js         左侧信息面板渲染
+        ├── theme.js         专题着色（阶段 4）
+        ├── tileset.js       3D Tiles 加载（阶段 5）
+        ├── perf.js          性能监测（阶段 5）
+        ├── api.js           后端接口封装
+        └── style.css
 ```
 
 **`main.js` 只允许做装配**：创建 viewer、调用各模块的 enable/load 函数、
@@ -121,7 +122,7 @@ token 从 `import.meta.env.VITE_TIANDITU_TOKEN` 读，`.env.example` 里给出�
 
 ### 1.4 验收清单
 
-- [ ] `npm install && npm run dev` 能启动，浏览器自动打开
+- [ ] 在 `frontend/` 下 `npm install && npm run dev` 能启动，浏览器自动打开
 - [ ] 3 秒内出现地球和 OSM 底图
 - [ ] **打开 DevTools → Network，过滤 `cesium.com`，请求数为 0**
 - [ ] 右上角显示实时 FPS
@@ -448,8 +449,8 @@ export function buildColorMap(themeData, palette)
 ### 5.1 数据生成脚本
 
 ```bash
-node scripts/gen-buildings.mjs 5000
-# 输出 public/buildings-5000.geojson
+node frontend/scripts/gen-buildings.mjs 5000
+# 输出 frontend/public/buildings-5000.geojson
 ```
 
 - 在光谷周边按网格生成，间距随数量自适应（保证不重叠）
